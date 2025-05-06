@@ -13,14 +13,15 @@ public class Constant {
     public static final String TOPIC_DB = "yuxin_li_db";
     public static final String TOPIC_LOG = "yuxin_li_log";
 
-    public static final String MYSQL_HOST = "10.39.48.36";
+    //没更新所以连接不上mysql
+    public static final String MYSQL_HOST = "10.160.60.17";
     public static final int MYSQL_PORT = 3306;
     public static final String MYSQL_USER_NAME = "root";
     public static final String MYSQL_PASSWORD = "Zh1028,./";
     public static final String HBASE_NAMESPACE = "ns_yuxin_li";
 
     public static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
-    public static final String MYSQL_URL = "jdbc:mysql://10.39.48.36:3306?useSSL=false";
+    public static final String MYSQL_URL = "jdbc:mysql://10.160.60.17:3306?useSSL=false";
 
     public static final String TOPIC_DWD_TRAFFIC_START = "dwd_traffic_start_yuxin_li";
     public static final String TOPIC_DWD_TRAFFIC_ERR = "dwd_traffic_err_yuxin_li";
@@ -37,7 +38,8 @@ public class Constant {
     public static final String TOPIC_DWD_USER_REGISTER = "dwd_user_register_yuxin_li";
 
 
-    public static final String DORIS_FE_NODES = "10.39.48.33:8030";
+    //存疑：不一定对，有报错的时候再修改
+    public static final String DORIS_FE_NODES = "10.160.60.14:8030";
 
-    public static final String DORIS_DATABASE = "dev_yuxin_li";
+    public static final String DORIS_DATABASE = "yuxin_realtime";
 }

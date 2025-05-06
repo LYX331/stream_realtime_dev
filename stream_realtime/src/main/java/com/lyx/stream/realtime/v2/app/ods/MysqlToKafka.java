@@ -38,6 +38,7 @@ public class MysqlToKafka {
         //将数据写入 Kafka
         mySQLSource.sinkTo(topic_db);
 
+
         env.execute("MysqlToKafka");
 
     }
