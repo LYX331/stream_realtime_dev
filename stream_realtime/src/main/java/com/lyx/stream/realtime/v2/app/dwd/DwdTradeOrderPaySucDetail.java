@@ -32,7 +32,7 @@ public class DwdTradeOrderPaySucDetail {
         // 设置空闲状态的保留时间为 30 分钟零 5 秒，超过该时间的空闲状态会被清理
                 tableEnv.getConfig().setIdleStateRetention(Duration.ofSeconds(30 * 60 + 5));
 
-        // 创建一个名为 topic_db 的 Kafka 源表，用于从 Kafka 主题中读取数据
+        // 创建一个名为 topic_db 的 Kafka 源表，用于从 Kafka 主题中读
         // 表结构包含 after（键值对映射）、source（键值对映射）、op（操作类型）和 ts_ms（时间戳）字段
         // SQLUtil.getKafkaDDL 方法用于生成 Kafka 相关的 DDL 配置
                 tableEnv.executeSql("CREATE TABLE topic_db (\n" +
