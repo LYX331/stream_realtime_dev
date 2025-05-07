@@ -161,7 +161,7 @@ public class DwsTradeCartAddUuWindow {
         SingleOutputStreamOperator<String> operator = aggregateDS
                 .map(new BeanToJsonStrMapFunction<>());
 
-//        operator.print();
+        operator.print();
 
         operator.sinkTo(FlinkSinkUtil.getDorisSink("dws_trade_cart_add_uu_window"));
 

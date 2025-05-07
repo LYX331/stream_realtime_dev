@@ -14,7 +14,10 @@
     <bytecodeTargetLevel>
       <module name="stream_common" target="8" />
       <module name="stream_realtime" target="8" />
+      <module name="stream_realtime1" target="8" />
+      <module name="stream_realtime2" target="8" />
       <module name="stream_realtime_dev" target="1.8" />
+      <module name="stream_realtime_dev2" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>

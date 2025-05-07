@@ -11,6 +11,7 @@ public class Constant {
     public static final String KAFKA_BROKERS = "cdh01:9092,cdh02:9092,cdh03:9092";
 
     public static final String TOPIC_DB = "yuxin_li_db";
+    public static final String TOPIC_GL = "realtime_v2_db";
     public static final String TOPIC_LOG = "yuxin_li_log";
 
     //没更新所以连接不上mysql

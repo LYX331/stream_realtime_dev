@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/stream_common/stream_common.iml" filepath="$PROJECT_DIR$/stream_common/stream_common.iml" />
       <module fileurl="file://$PROJECT_DIR$/stream_realtime/stream_realtime.iml" filepath="$PROJECT_DIR$/stream_realtime/stream_realtime.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/stream_realtime_dev.iml" filepath="$PROJECT_DIR$/.idea/stream_realtime_dev.iml" />
+      <module fileurl="file://$PROJECT_DIR$/stream_realtime_dev2/stream_realtime_dev2.iml" filepath="$PROJECT_DIR$/stream_realtime_dev2/stream_realtime_dev2.iml" />
     </modules>
   </component>
 </project>
