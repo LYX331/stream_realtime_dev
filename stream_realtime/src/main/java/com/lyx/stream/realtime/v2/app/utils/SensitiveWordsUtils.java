@@ -18,7 +18,7 @@ public class SensitiveWordsUtils {
 
     public static ArrayList<String> getSensitiveWordsLists(){
         ArrayList<String> res = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader("Q:\\idea\\2207A\\stream-dev1.1\\stream-realtime\\src\\main\\resources\\Identify-sensitive-words.txt"))){
+        try (BufferedReader reader = new BufferedReader(new FileReader("D:\\07Aflink\\stream_realtime_dev\\stream_realtime\\src\\main\\resources\\Identify-sensitive-words (1).txt"))){
             String line ;
             while ((line = reader.readLine()) != null){
                 res.add(line);

@@ -10,7 +10,7 @@ package com.lyx.stream.realtime.v1.constant;
 public class Constant {
     public static final String KAFKA_BROKERS = "cdh01:9092,cdh02:9092,cdh03:9092";
     public static final String TOPIC_GL = "realtime_v2_db";
-    public static final String TOPIC_FACT = "xinyi_fact_comment_db";
+    public static final String TOPIC_FACT = "lyx_fact_comment_db";
     public static final String TOPIC_RESULT_SENSTITVE = "xinyi_result_sensitive_words_user";
     public static  final  String TOPIC_API="sk-lbztkgmavrhvykupeijbgqawavmkghfvlslyihnvjxxjkzeo";
     public static final  String TOPIC_API_ADDR="https://api.siliconflow.cn/v1/chat/completions";
