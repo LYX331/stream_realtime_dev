@@ -47,12 +47,11 @@ public class BaseApp {
         //从 Kafka 读取数据
         //使用 FlinkSourceUtil 工具类获取 Kafka 数据源
         KafkaSource<String> kafkaSource = FlinkSourceUtil.getKafkaSource(Constant.TOPIC_DB, "dim_app");
-        //通过 env.fromSource 方法将 Kafka 数据源添加到 Flink 环境中
         DataStreamSource<String> kafkaStrDS = env.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(), "kafka_source");
 
         //kafkaStrDS.print();
 
-        //处理 Kafka 数据
+        // 处理 Kafka 原始数据流
         SingleOutputStreamOperator<JSONObject> jsonObjDS = kafkaStrDS.process(
                 //使用 ProcessFunction 对 Kafka 读取的 JSON 字符串进行处理
                 new ProcessFunction<String, JSONObject>() {
@@ -80,25 +79,28 @@ public class BaseApp {
 
 //        jsonObjDS.print();
 
-        //从 MySQL 读取数据
-        //使用 FlinkSourceUtil 工具类获取 MySQL 数据源
+        // 从 MySQL 数据库读取配置表数据
+        //获取 MySQL 数据源
         MySqlSource<String> mySqlSource = FlinkSourceUtil.getMySqlSource("realtime_v1_config", "table_process_dim");
 
-        //通过 env.fromSource 方法将 MySQL 数据源添加到 Flink 环境中
+        //将 MySQL 数据源添加到 Flink 环境中
         DataStreamSource<String> mysqlStrDS = env
                 .fromSource(mySqlSource, WatermarkStrategy.noWatermarks(), "mysql_source")
                 .setParallelism(1);
 
 //        mysqlStrDS.print();
 
-        // 处理 MySQL 数据
+        // 处理 MySQL 数据 将原始 CDC 日志（JSON 字符串格式） 转换为可理解的业务对象 （自定义实体类）
         SingleOutputStreamOperator<TableProcessDim> tpDS = mysqlStrDS.map(
                 new MapFunction<String, TableProcessDim>() {
                     @Override
                     public TableProcessDim map(String jsonStr) {
+                        // 解析 JSON
                         JSONObject jsonObj = JSON.parseObject(jsonStr);
+                        // 提取操作类型 (op)
                         String op = jsonObj.getString("op");
                         TableProcessDim tableProcessDim = null;
+                        // 根据类型选择数据字段
                         if("d".equals(op)){
                             tableProcessDim = jsonObj.getObject("before", TableProcessDim.class);
                         }else{
@@ -112,7 +114,7 @@ public class BaseApp {
 
 //        tpDS.print();
 
-        //根据 MySQL 数据操作 HBase 表
+        //根据 MySQL 数据操作 HBase 实现 HBase 表结构的自动化运维
         tpDS.map(
                 new RichMapFunction<TableProcessDim, TableProcessDim>() {
 
@@ -149,7 +151,7 @@ public class BaseApp {
 
 //         tpDS.print();
 
-        //广播 MySQL 数据
+        //广播 MySQL 数据 用于后续关联主数据流
         //将 tpDS 数据流广播到所有并行任务中，创建一个 BroadcastStream 对象
         MapStateDescriptor<String, TableProcessDim> mapStateDescriptor =
                 new MapStateDescriptor<String, TableProcessDim>("mapStateDescriptor",String.class, TableProcessDim.class);
@@ -169,7 +171,7 @@ public class BaseApp {
         //将处理后的数据写入 HBase
         dimDS.addSink(new HBaseSinkFunction());
 
-        env.execute("dim");
+        env.execute("bim");
 
     }
 }

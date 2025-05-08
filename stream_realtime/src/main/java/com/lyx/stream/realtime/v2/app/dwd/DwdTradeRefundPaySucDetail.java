@@ -14,6 +14,9 @@ import java.time.Duration;
  * @Author yuxin_li
  * @Date 2025/4/14 11:46
  * @description: DwdTradeRefundPaySucDetail
+ * 从 Kafka 中读取交易相关的数据
+ * 经过过滤、关联处理后，将完整的退款支付成功详情信息，
+ * 写入到指定的 Kafka 主题中
  */
 
 public class DwdTradeRefundPaySucDetail {

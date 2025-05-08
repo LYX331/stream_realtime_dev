@@ -37,6 +37,9 @@ import org.apache.flink.util.Collector;
  * @Author yuxin_li
  * @Date 2025/4/21 9:37
  * @description: DwsTrafficVcChArIsNewPageViewWindow
+ * 按照版本、渠道、地区和用户类型（是否为新用户）进行分组
+ * 在固定时间窗口内对 PV、UV、SV 和页面停留总时长等指标进行聚合统计
+ * 并将统计结果存储到 Doris 数据库中，为后续的数据分析和业务决策提供支持
  */
 
 public class DwsTrafficVcChArIsNewPageViewWindow {

@@ -12,6 +12,8 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
  * @Author yuxin_li
  * @Date 2025/4/11 15:50
  * @description: DwdInteractionCommentInfo
+ * 从 Kafka 读取数据，与 HBase 中的维度数据进行关联
+ * 将处理后的数据写入到另一个 Kafka 主题中
  */
 
 public class DwdInteractionCommentInfo {
@@ -22,11 +24,12 @@ public class DwdInteractionCommentInfo {
         env.setParallelism(4);
 
 
+
         StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
 
         env.enableCheckpointing(5000L, CheckpointingMode.EXACTLY_ONCE);
 
-//        env.setRestartStrategy(RestartStrategies.failureRateRestart(3, Time.days(30),Time.seconds(3)));
+//      env.setRestartStrategy(RestartStrategies.failureRateRestart(3, Time.days(30),Time.seconds(3)));
 
         //创建 Kafka 源表
         tableEnv.executeSql("CREATE TABLE topic_db (\n" +

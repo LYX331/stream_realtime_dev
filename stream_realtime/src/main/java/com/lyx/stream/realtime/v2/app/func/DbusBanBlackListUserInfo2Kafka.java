@@ -1,4 +1,4 @@
-package func;
+package com.lyx.stream.realtime.v2.app.func;
 import com.lyx.stream.realtime.v1.constant.Constant;
 import com.lyx.stream.realtime.v1.utils.EnvironmentSettingUtils;
 import com.lyx.stream.realtime.v1.utils.KafkaUtils;
