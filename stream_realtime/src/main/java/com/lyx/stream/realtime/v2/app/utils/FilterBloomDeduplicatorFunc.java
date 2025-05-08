@@ -13,11 +13,13 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @Description:
- * @Author: lyx
- * @Date: 2025/5/7 16:56
+ * @Package com.retailersv1.func.FilterBloomDeduplicatorFunc
+ * @Author  xinyi.jiao
+ * @Date 2025/5/05 22:25
+ * @description: 布隆过滤器
  */
 public class FilterBloomDeduplicatorFunc extends RichFilterFunction<JSONObject> {
+
     private static final Logger logger = LoggerFactory.getLogger(FilterBloomDeduplicatorFunc.class);
 
     private final int expectedInsertions;
@@ -94,4 +96,3 @@ public class FilterBloomDeduplicatorFunc extends RichFilterFunction<JSONObject> 
         return Hashing.murmur3_128().hashString(key, StandardCharsets.UTF_8).asInt();
     }
 }
-
