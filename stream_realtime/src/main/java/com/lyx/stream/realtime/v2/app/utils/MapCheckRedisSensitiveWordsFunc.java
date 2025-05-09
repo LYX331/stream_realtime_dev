@@ -5,16 +5,11 @@ import org.apache.flink.api.common.functions.RichMapFunction;
 
 
 /**
- * @Package com.retailersv1.func.mapCheckRedisSensitiveWordsFuc
- * @Author zhou.han
- * @Date 2025/4/1 13:32
+ * @Package com/lyx/stream/realtime/v2/app/utils/mapCheckRedisSensitiveWordsFuc
+ * @Author yuxin_li
  * @description: check sensitive redis lua
  */
 public class MapCheckRedisSensitiveWordsFunc extends RichMapFunction<JSONObject,JSONObject>{
-
-
-
-
     @Override
     public JSONObject map(JSONObject jsonObject) throws Exception {
         JSONObject resultJson = new JSONObject();

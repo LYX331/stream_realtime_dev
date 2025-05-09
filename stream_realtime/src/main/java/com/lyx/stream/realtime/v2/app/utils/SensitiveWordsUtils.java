@@ -8,14 +8,12 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * @Package com.stream.utils.SensitiveWordsUtils
- * @Author xinyi.jiao
+ * @Package com/lyx/stream/realtime/v2/app/utils/SensitiveWordsUtils
+ * @Author yuxin_li
  * @Date 2025/5/06 21:58
  * @description: sensitive words
  */
 public class SensitiveWordsUtils {
-
-
     public static ArrayList<String> getSensitiveWordsLists(){
         ArrayList<String> res = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader("D:\\07Aflink\\stream_realtime_dev\\stream_realtime\\src\\main\\resources\\Identify-sensitive-words (1).txt"))){

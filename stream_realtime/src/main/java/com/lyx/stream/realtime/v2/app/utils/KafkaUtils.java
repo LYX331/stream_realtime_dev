@@ -21,9 +21,8 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 /**
- * time: 2021/8/11 10:20 className: KafkaUtils.java
  *
- * @author han.zhou
+ * @author yuxin_li
  * @version 1.0.0
  */
 public final class KafkaUtils {

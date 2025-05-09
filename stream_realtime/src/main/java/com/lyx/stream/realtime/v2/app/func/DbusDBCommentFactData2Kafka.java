@@ -25,8 +25,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Package com.jiao.func.DbusDBCommentFactData2Kafka
- * @Author xinyi.jiao
+ * @Package com/lyx/stream/realtime/v2/app/func/DbusBanBlackListUserInfo2Kafka
+ * @Author yuxin_li
  * @Date 2025/5/7 15:33
  * @description: TODO 该任务，修复了之前SQL的代码逻辑，在之前的逻辑中使用了FlinkSQL的方法进行了实现，把去重的问题，留给了下游的DWS，这种行为非常的yc
  *  * TODO Before FlinkSQL Left join and use hbase look up join func ,left join 产生的2条异常数据，会在下游做处理，一条为null，一条为未关联上的数据
@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class DbusDBCommentFactData2Kafka {
     private static final ArrayList<String> sensitiveWordsLists;
-
+    //静态初始化敏感词列表（从工具类加载）
     static {
         sensitiveWordsLists = SensitiveWordsUtils.getSensitiveWordsLists();
     }
@@ -80,7 +80,7 @@ public class DbusDBCommentFactData2Kafka {
                         }),
                 "kafka_cdc_xy_source"
         ).uid("kafka_cdc_xy_source").name("kafka_cdc_xy_source");
-        kafkaCdcDbSource.print();
+//        kafkaCdcDbSource.print();
 //      {"op":"c","after":{"payment_way":"3501","refundable_time":1747264827000,"original_total_amount":"24522.00","order_status":"1001","consignee_tel":"13888155719","trade_body":"Redmi 10X 4G Helio G85游戏芯 4800万超清四摄 5020mAh大电量 小孔全面屏 128GB大存储 4GB+128GB 明月灰 游戏智能手机 小米 红米等7件商品","id":1133,"consignee":"吴琛钧","create_time":1746660027000,"coupon_reduce_amount":"0.00","out_trade_no":"858182663635648","total_amount":"24272.00","user_id":78,"province_id":27,"activity_reduce_amount":"250.00"},"source":{"thread":20259,"server_id":1,"version":"1.9.7.Final","file":"mysql-bin.000004","connector":"mysql","pos":31459615,"name":"mysql_binlog_source","row":0,"ts_ms":1746596801000,"snapshot":"false","db":"realtime_v1","table":"order_info"},"ts_ms":1746596800964}
         DataStream<JSONObject> filteredOrderInfoStream = kafkaCdcDbSource
                 //转成json
@@ -247,11 +247,10 @@ public class DbusDBCommentFactData2Kafka {
 //        6> {"msg":"十月稻田大米质量差，口感不佳，不推荐购买。","consignee":"舒炎德","violation_grade":"","user_id":150,"violation_msg":"","is_violation":0,"ts_ms":1746518022784,"ds":"20250506"}
 
         //专换类型 然后存入kafka
-        suppleTimeFieldDs.map(js -> js.toJSONString())
-                .sinkTo(
-                        KafkaUtils.buildKafkaSink(Constant.KAFKA_BROKERS, Constant.TOPIC_FACT)
-                ).uid("xy_db_fact_comment_sink").name("xy_db_fact_comment_sink");
-
+//        suppleTimeFieldDs.map(js -> js.toJSONString())
+//                .sinkTo(
+//                        KafkaUtils.buildKafkaSink(Constant.KAFKA_BROKERS, Constant.TOPIC_FACT)
+//                ).uid("xy_db_fact_comment_sink").name("xy_db_fact_comment_sink");
 
 
         env.execute();

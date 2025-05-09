@@ -41,25 +41,20 @@ import org.apache.flink.util.Collector;
 
 public class DwsTradeCartAddUuWindow {
     public static void main(String[] args) throws Exception {
-        //环境配置
+
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         env.setParallelism(1);
 
         env.enableCheckpointing(5000L, CheckpointingMode.EXACTLY_ONCE);
 
-        //设置重启策略为固定延迟重启，最多尝试 3 次，每次重启间隔 3000 毫秒（即 3 秒），以应对作业执行过程中可能出现的错误或失败情况
         env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3,3000L));
 
-        //从 Kafka 读取数据
         KafkaSource<String> kafkaSource = FlinkSourceUtil.getKafkaSource("dwd_trade_cart_add_yuxin_li", "dws_trade_cart_add_uu_window");
 
-        //将 Kafka 数据源添加到 Flink 环境中，创建一个字符串类型的数据流 kafkaStrDS
-        // 并设置不使用水位线 表明假设数据是有序的，不需要处理乱序数据的情况
         DataStreamSource<String> kafkaStrDS
                 = env.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(), "Kafka_Source");
 
-        //数据转换为 JSON 对象
         SingleOutputStreamOperator<JSONObject> jsonObjDS = kafkaStrDS.map(JSON::parseObject);
 
         //分配时间戳和水位线
@@ -76,13 +71,9 @@ public class DwsTradeCartAddUuWindow {
                         )
         );
 
-        //按键分区 将相同 user_id 的数据分配到同一个分区中进行处理，便于后续针对每个用户进行独立的状态管理和计算
         KeyedStream<JSONObject, String> keyedDS = withWatermarkDS.keyBy(jsonObj -> jsonObj.getString("user_id"));
 
         //去重处理
-        //状态的存活时间设置为 1 天
-        // 在处理每个元素时，获取当前加购的日期并与上次加购日期比较，
-        // 如果日期不同，则将该数据输出（即认为是一次新的独立加购），并更新状态
         SingleOutputStreamOperator<JSONObject> cartUUDS = keyedDS.process(
                 new KeyedProcessFunction<String, JSONObject, JSONObject>() {
                     private ValueState<String> lastCartDateState;
@@ -157,7 +148,7 @@ public class DwsTradeCartAddUuWindow {
                 }
         );
 
-        //数据转换为 JSON 字符串
+
         SingleOutputStreamOperator<String> operator = aggregateDS
                 .map(new BeanToJsonStrMapFunction<>());
 

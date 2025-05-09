@@ -12,9 +12,6 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class SiliconFlowApi {
-
-
-
     static {
         JSONObject.DEFAULT_GENERATE_FEATURE |= SerializerFeature.DisableCircularReferenceDetect.getMask();
     }

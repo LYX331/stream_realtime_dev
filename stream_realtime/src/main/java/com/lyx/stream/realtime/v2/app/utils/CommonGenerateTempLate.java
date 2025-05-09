@@ -7,8 +7,8 @@ import com.lyx.stream.realtime.v1.constant.Constant;
 import static com.lyx.stream.realtime.v2.app.utils.SiliconFlowApi.generateBadReview;
 
 /**
- * @Package com.stream.utils.CommonGenerateTempLate
- * @Author xinyi.jiao
+ * @Package com/lyx/stream/realtime/v2/app/utils/CommonGenerateTempLate
+ * @Author yuxin_li
  * @Date 2025/5/05 19:43
  * @description: TempLate
  */

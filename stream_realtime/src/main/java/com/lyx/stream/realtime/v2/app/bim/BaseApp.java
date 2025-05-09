@@ -37,15 +37,14 @@ import org.apache.hadoop.hbase.client.Connection;
  */
 public class BaseApp {
     public static void main(String[] args) throws Exception {
-        //创建一个 StreamExecutionEnvironment 对象用于配置和执行流式计算任务
+
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        //设置并行度为 4
+
         env.setParallelism(4);
-        //启用检查点机制，检查点间隔为 5000 毫秒（即 5 秒）
+
         env.enableCheckpointing(5000L , CheckpointingMode.EXACTLY_ONCE);
 
         //从 Kafka 读取数据
-        //使用 FlinkSourceUtil 工具类获取 Kafka 数据源
         KafkaSource<String> kafkaSource = FlinkSourceUtil.getKafkaSource(Constant.TOPIC_DB, "dim_app");
         DataStreamSource<String> kafkaStrDS = env.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(), "kafka_source");
 
@@ -79,18 +78,15 @@ public class BaseApp {
 
 //        jsonObjDS.print();
 
-        // 从 MySQL 数据库读取配置表数据
         //获取 MySQL 数据源
         MySqlSource<String> mySqlSource = FlinkSourceUtil.getMySqlSource("realtime_v1_config", "table_process_dim");
 
-        //将 MySQL 数据源添加到 Flink 环境中
         DataStreamSource<String> mysqlStrDS = env
                 .fromSource(mySqlSource, WatermarkStrategy.noWatermarks(), "mysql_source")
                 .setParallelism(1);
 
 //        mysqlStrDS.print();
 
-        // 处理 MySQL 数据 将原始 CDC 日志（JSON 字符串格式） 转换为可理解的业务对象 （自定义实体类）
         SingleOutputStreamOperator<TableProcessDim> tpDS = mysqlStrDS.map(
                 new MapFunction<String, TableProcessDim>() {
                     @Override
@@ -114,7 +110,6 @@ public class BaseApp {
 
 //        tpDS.print();
 
-        //根据 MySQL 数据操作 HBase 实现 HBase 表结构的自动化运维
         tpDS.map(
                 new RichMapFunction<TableProcessDim, TableProcessDim>() {
 
@@ -152,7 +147,6 @@ public class BaseApp {
 //         tpDS.print();
 
         //广播 MySQL 数据 用于后续关联主数据流
-        //将 tpDS 数据流广播到所有并行任务中，创建一个 BroadcastStream 对象
         MapStateDescriptor<String, TableProcessDim> mapStateDescriptor =
                 new MapStateDescriptor<String, TableProcessDim>("mapStateDescriptor",String.class, TableProcessDim.class);
         BroadcastStream<TableProcessDim> broadcastDS = tpDS.broadcast(mapStateDescriptor);
@@ -162,13 +156,10 @@ public class BaseApp {
         BroadcastConnectedStream<JSONObject, TableProcessDim> connectDS = jsonObjDS.connect(broadcastDS);
 
         // 处理连接后的数据
-        //使用自定义的 TableProcessFunction 对连接后的数据流进行处理
         SingleOutputStreamOperator<Tuple2<JSONObject,TableProcessDim>> dimDS = connectDS
                 .process(new TableProcessFunction(mapStateDescriptor));
-
 //        dimDS.print();
-
-        //将处理后的数据写入 HBase
+        //写入 HBase
         dimDS.addSink(new HBaseSinkFunction());
 
         env.execute("bim");

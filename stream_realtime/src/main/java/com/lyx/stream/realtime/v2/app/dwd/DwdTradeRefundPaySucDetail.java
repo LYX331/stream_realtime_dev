@@ -48,7 +48,7 @@ public class DwdTradeRefundPaySucDetail {
         );
 //        tableEnv.executeSql("select * from base_dic").print();
 
-        // 3. 过滤退款成功表数据
+        //过滤退款成功表数据
         Table refundPayment = tableEnv.sqlQuery(
                 "select " +
                         " after['id'] id," +
@@ -66,7 +66,7 @@ public class DwdTradeRefundPaySucDetail {
         tableEnv.createTemporaryView("refund_payment", refundPayment);
 //        refundPayment.execute().print();
 
-        // 4. 过滤退单表中的退单成功的数据
+        // 过滤退单表中的退单成功的数据
         Table orderRefundInfo = tableEnv.sqlQuery(
                 "select " +
                         " after['order_id'] order_id," +
@@ -80,7 +80,7 @@ public class DwdTradeRefundPaySucDetail {
         tableEnv.createTemporaryView("order_refund_info", orderRefundInfo);
 //        orderRefundInfo.execute().print();
 
-        // 5. 过滤订单表中的退款成功的数据
+        // 过滤订单表中的退款成功的数据
         Table orderInfo = tableEnv.sqlQuery(
                 "select " +
                         "after['id'] id," +
@@ -94,7 +94,6 @@ public class DwdTradeRefundPaySucDetail {
         tableEnv.createTemporaryView("order_info", orderInfo);
 //        orderInfo.execute().print();
 
-        // 6. 4 张表的 join
         Table result = tableEnv.sqlQuery(
                 "select " +
                         " rp.id," +
@@ -115,7 +114,7 @@ public class DwdTradeRefundPaySucDetail {
                         " on rp.order_id=oi.id ");
 //        result.execute().print();
 
-        // 7.写出到 kafka
+        //写出到 kafka
         tableEnv.executeSql("create table "+Constant.TOPIC_DWD_TRADE_REFUND_PAYMENT_SUCCESS+"(" +
                 " id string," +
                 " user_id string," +

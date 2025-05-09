@@ -8,8 +8,8 @@ import com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema;
 import java.util.Properties;
 
 /**
- * @Package com.stream.common.utils.CdcSourceUtils
- * @Author  xinyi.jiao
+ * @Package com/lyx/stream/realtime/v2/app/utils/CdcSourceUtils
+ * @Author  yuxin_li
  * @Date 2025/5/04 11:49
  * @description: MySQL Cdc Source
  */

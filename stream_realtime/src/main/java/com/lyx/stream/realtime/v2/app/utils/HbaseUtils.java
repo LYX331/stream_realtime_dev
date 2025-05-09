@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * @author xinyi.jiao
+ * @author yuxin_li
  * @time: 2025/5/07 11:39
  * @className: HBaseUtils
  * @description HBase 工具类

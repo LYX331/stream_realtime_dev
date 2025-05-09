@@ -21,11 +21,9 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 public class MysqlToKafka {
     public static void main(String[] args) throws Exception {
-        //环境配置
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(2);
 
-        //从 MySQL 读取数据
         MySqlSource<String> realtimeV1 = FlinkSourceUtil.getMySqlSource("realtime_v1", "*");
 
         DataStreamSource<String> mySQLSource = env.fromSource(realtimeV1, WatermarkStrategy.noWatermarks(), "MySQL Source");
@@ -35,7 +33,6 @@ public class MysqlToKafka {
         //创建 Kafka 写入器
         KafkaSink<String> topic_db = FlinkSinkUtil.getKafkaSink("yuxin_li_db");
 
-        //将数据写入 Kafka
         mySQLSource.sinkTo(topic_db);
 
 

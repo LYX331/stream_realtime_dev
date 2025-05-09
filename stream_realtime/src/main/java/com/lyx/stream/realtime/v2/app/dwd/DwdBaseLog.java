@@ -28,7 +28,7 @@ import java.util.Map;
 
 /**
  * @Package com.lyx.stream.realtime.v2.app.bwd.DwdBaseLog
- * @Author zheyuan.liu
+ * @Author yuxin_li
  * @Date 2025/4/11 10:35
  * @description: DwdBaseLog
  * 从 Kafka 读取数据，进行数据清洗、校验和状态管理
@@ -45,14 +45,12 @@ public class DwdBaseLog {
 
     public static void main(String[] args) throws Exception {
 
-        //环境配置和常量定义
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         env.setParallelism(4);
 
         env.enableCheckpointing(5000L, CheckpointingMode.EXACTLY_ONCE);
 
-        //从 Kafka 读取数据
         KafkaSource<String> kafkaSource = FlinkSourceUtil.getKafkaSource(Constant.TOPIC_LOG, "dwd_log");
 
         DataStreamSource<String> kafkaStrDS = env
@@ -60,7 +58,7 @@ public class DwdBaseLog {
 
 //        kafkaStrDS.print();
 
-//        // 数据清洗和脏数据处理
+//      数据清洗和脏数据处理
         OutputTag<String> dirtyTag = new OutputTag<String>("dirtyTag"){};
 
         SingleOutputStreamOperator<JSONObject> jsonObjDS = kafkaStrDS.process(
@@ -79,13 +77,13 @@ public class DwdBaseLog {
 
 //        jsonObjDS.print();
 
-        //过滤脏数据 将脏数据写入kafka中
+        //过滤脏数据
         SideOutputDataStream<String> dirtyDS = jsonObjDS.getSideOutput(dirtyTag);
 
         dirtyDS.sinkTo(FlinkSinkUtil.getKafkaSink("dirty_data"));
 
 
-//        //数据校验和状态管理 确保用户新老标识的准确性，避免因数据回传或重复上报导致的误判
+      //确保用户新老标识的准确性
         KeyedStream<JSONObject, String> keyedDS = jsonObjDS.keyBy(jsonObj -> jsonObj.getJSONObject("common").getString("mid"));
 
         SingleOutputStreamOperator<JSONObject> fixedDS = keyedDS.map(
@@ -136,12 +134,11 @@ public class DwdBaseLog {
 //        fixedDS.print();
 
         //定义侧输出流标签数据分流
-        //将不同业务类型的数据（错误、启动、曝光、动作）输出到不同的侧输出流
         OutputTag<String> errTag = new OutputTag<String>("errTag") {};
         OutputTag<String> startTag = new OutputTag<String>("startTag") {};
         OutputTag<String> displayTag = new OutputTag<String>("displayTag") {};
         OutputTag<String> actionTag = new OutputTag<String>("actionTag") {};
-        //分流处理逻辑
+
         SingleOutputStreamOperator<String> pageDS = fixedDS.process(
                 new ProcessFunction<JSONObject, String>() {
                     @Override
@@ -197,12 +194,11 @@ public class DwdBaseLog {
         );
 
         //输出数据到 Kafka
-        //获取侧输出流
         SideOutputDataStream<String> errDS = pageDS.getSideOutput(errTag);
         SideOutputDataStream<String> startDS = pageDS.getSideOutput(startTag);
         SideOutputDataStream<String> displayDS = pageDS.getSideOutput(displayTag);
         SideOutputDataStream<String> actionDS = pageDS.getSideOutput(actionTag);
-        //打印数据到控制台
+
         pageDS.print("页面:");
         errDS.print("错误:");
         startDS.print("启动:");
@@ -216,7 +212,7 @@ public class DwdBaseLog {
         streamMap.put(ACTION,actionDS);
         streamMap.put(PAGE,pageDS);
 
-        //// 输出到 Kafka
+
         streamMap
                 .get(PAGE)
                 .sinkTo(FlinkSinkUtil.getKafkaSink(Constant.TOPIC_DWD_TRAFFIC_PAGE));

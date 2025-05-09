@@ -1,6 +1,5 @@
 package com.lyx.stream.realtime.v2.app.utils;
 
-
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -22,8 +21,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Package com.retailersv1.func.AsyncHbaseDimBaseDicFunc
- * @Author xinyi.jiao
+ * @Package com/lyx/stream/realtime/v2/app/utils/AsyncHbaseDimBaseDicFunc
+ * @Author yuxin_li
  * @Date 2025/3/15 20:47
  * @description: Async DimBaseDic
  */

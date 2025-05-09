@@ -18,7 +18,7 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 public class DwdInteractionCommentInfo {
     public static void main(String[] args) throws Exception {
-        //环境配置
+
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         env.setParallelism(4);
@@ -40,7 +40,6 @@ public class DwdInteractionCommentInfo {
                 ")" + SQLUtil.getKafkaDDL(Constant.TOPIC_DB, Constant.TOPIC_DWD_INTERACTION_COMMENT_INFO));
 //        tableEnv.executeSql("select * from topic_db").print();
 
-        //处理 Kafka 数据
         Table commentInfo = tableEnv.sqlQuery("select  \n" +
                 "    `after`['id'] as id, \n" +
                 "    `after`['user_id'] as user_id, \n" +
@@ -54,8 +53,7 @@ public class DwdInteractionCommentInfo {
 
         tableEnv.createTemporaryView("comment_info",commentInfo);
 
-//        /
-        //创建 HBase 维度表
+
         tableEnv.executeSql("CREATE TABLE base_dic (\n" +
                 " dic_code string,\n" +
                 " info ROW<dic_name string>,\n" +
@@ -63,7 +61,6 @@ public class DwdInteractionCommentInfo {
                 ") " + SQLUtil.getHBaseDDL("dim_base_dic"));
 //        tableEnv.executeSql("select * from base_dic").print();
 
-        //关联数据
         Table joinedTable = tableEnv.sqlQuery("SELECT  \n" +
                 "    id,\n" +
                 "    user_id,\n" +
@@ -77,7 +74,7 @@ public class DwdInteractionCommentInfo {
                 "    ON c.appraise = dic.dic_code");
 //        joinedTable.execute().print();
 
-        //创建动态表和要写入的主题进行映射创建 Kafka 目标表
+
         tableEnv.executeSql("CREATE TABLE "+Constant.TOPIC_DWD_INTERACTION_COMMENT_INFO+" (\n" +
                 "    id string,\n" +
                 "    user_id string,\n" +

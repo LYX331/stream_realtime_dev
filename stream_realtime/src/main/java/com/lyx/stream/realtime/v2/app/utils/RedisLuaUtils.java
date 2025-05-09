@@ -13,8 +13,8 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * @Package com.stream.common.utils.RedisUtils.java
- * @Author xinyi.jiao
+ * @Package com/lyx/stream/realtime/v2/app/utils/RedisUtils.java
+ * @Author yuxin_li
  * @Date 2025/5/04 23:09
  * @description: Lua check redis words
  */

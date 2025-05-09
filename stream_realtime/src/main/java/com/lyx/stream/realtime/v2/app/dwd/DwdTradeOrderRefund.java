@@ -47,7 +47,7 @@ public class DwdTradeOrderRefund {
         );
 //        tableEnv.executeSql("select * from base_dic").print();
 
-        // 2. 过滤退单表数据 order_refund_info   insert
+        //  过滤退单表数据
         Table orderRefundInfo = tableEnv.sqlQuery(
                 "select " +
                         " after['id'] id," +
@@ -67,7 +67,7 @@ public class DwdTradeOrderRefund {
         tableEnv.createTemporaryView("order_refund_info", orderRefundInfo);
 //        orderRefundInfo.execute().print();
 
-        // 3. 过滤订单表中的退单数据: order_info  update
+        // 过滤订单表中的退单数据
         Table orderInfo = tableEnv.sqlQuery(
                 "select " +
                         " after['id'] id," +
@@ -80,7 +80,7 @@ public class DwdTradeOrderRefund {
         tableEnv.createTemporaryView("order_info", orderInfo);
 //        orderInfo.execute().print();
 
-        // 4. join: 普通的和 lookup join
+
         Table result = tableEnv.sqlQuery(
                 "select " +
                         "  ri.id," +
@@ -101,7 +101,7 @@ public class DwdTradeOrderRefund {
                         "  on ri.order_id=oi.id ");
 //        result.execute().print();
 
-        // 5. 写出到 kafka
+
         tableEnv.executeSql(
                 "create table "+Constant.TOPIC_DWD_TRADE_ORDER_REFUND+"(" +
                         "id string," +
