@@ -55,7 +55,9 @@ public class DwsUserUserLoginWindow {
         DataStreamSource<String> kafkaStrDS
                 = env.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(), "Kafka_Source");
 
+
         SingleOutputStreamOperator<JSONObject> jsonObjDS = kafkaStrDS.map(JSON::parseObject);
+
         // 对 jsonObjDS 进行过滤操作
         SingleOutputStreamOperator<JSONObject> filterDS = jsonObjDS.filter(
                 new FilterFunction<JSONObject>() {
