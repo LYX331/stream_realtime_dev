@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/stream-realitime2/stream-realitime2.iml" filepath="$PROJECT_DIR$/stream-realitime2/stream-realitime2.iml" />
       <module fileurl="file://$PROJECT_DIR$/stream_common/stream_common.iml" filepath="$PROJECT_DIR$/stream_common/stream_common.iml" />
       <module fileurl="file://$PROJECT_DIR$/stream_realtime/stream_realtime.iml" filepath="$PROJECT_DIR$/stream_realtime/stream_realtime.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/stream_realtime_dev.iml" filepath="$PROJECT_DIR$/.idea/stream_realtime_dev.iml" />

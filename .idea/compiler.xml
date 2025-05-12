@@ -8,10 +8,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="stream_realtime" />
+        <module name="stream-realitime2" />
         <module name="stream_common" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="stream-realitime2" target="8" />
       <module name="stream_common" target="8" />
       <module name="stream_realtime" target="8" />
       <module name="stream_realtime1" target="8" />
