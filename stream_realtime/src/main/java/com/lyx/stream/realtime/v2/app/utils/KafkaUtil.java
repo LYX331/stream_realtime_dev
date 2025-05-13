@@ -15,11 +15,6 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
  */
 public class KafkaUtil {
     private static String brokers = "cdh01:9092,cdh02:9092,cdh03:9092";
-
-    /**
-     * @param topic
-     * @return
-     */
     public static FlinkKafkaProducer<String> getKafkaSink(String topic) {
         return new FlinkKafkaProducer<String>(brokers,
                 topic,

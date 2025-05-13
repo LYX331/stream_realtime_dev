@@ -2,6 +2,7 @@ package com.lyx.stream.realitime2.dwd;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.lyx.stream.realtime.v2.app.utils.KafkaUtil;
 import lombok.SneakyThrows;
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
@@ -30,12 +31,13 @@ public class label2kafka {
             @Override
             public JSONObject map(JSONObject jsonObject) throws Exception {
                 JSONObject after = jsonObject.getJSONObject("after");
-                after.put("op",jsonObject.getString("op"));
-                after.put("ts",jsonObject.getString("ts_ms"));
+                after.put("op", jsonObject.getString("op"));
+                after.put("ts", jsonObject.getString("ts_ms"));
                 return after;
             }
         });
     }
+
     public static SingleOutputStreamOperator<JSONObject> assignTimestampsAndWatermarks(SideOutputDataStream<JSONObject> userInfoOutputDS) {
         return userInfoOutputDS.assignTimestampsAndWatermarks(
                 WatermarkStrategy
@@ -48,25 +50,33 @@ public class label2kafka {
                         })
         );
     }
+
     @SneakyThrows
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(4);
 
-        DataStreamSource<String> kafkaSource = KafkaUtil.getKafkaSource(env, "xinnuo_zhao_gd1", "label2kafka");
+        DataStreamSource<String> kafkaSource = KafkaUtil.getKafkaSource(env, "yuxin_li_db", "label2kafka");
 
         // 过滤出订单信息
-        final OutputTag<JSONObject> orderInfoJsonDS = new OutputTag<JSONObject>("order_info"){};
+        final OutputTag<JSONObject> orderInfoJsonDS = new OutputTag<JSONObject>("order_info") {
+        };
         // 过滤出购物车信息
-        final OutputTag<JSONObject> cartInfoJsonDS = new OutputTag<JSONObject>("cart_info"){};
+        final OutputTag<JSONObject> cartInfoJsonDS = new OutputTag<JSONObject>("cart_info") {
+        };
         // 过滤出订单详情信息
-        final OutputTag<JSONObject> orderDetailJsonDS = new OutputTag<JSONObject>("order_detail"){};
+        final OutputTag<JSONObject> orderDetailJsonDS = new OutputTag<JSONObject>("order_detail") {
+        };
         // 过滤出评论信息
-        final OutputTag<JSONObject> commentInfoJsonDS = new OutputTag<JSONObject>("comment_info"){};
+        final OutputTag<JSONObject> commentInfoJsonDS = new OutputTag<JSONObject>("comment_info") {
+        };
         // 过滤出收藏信息
-        final OutputTag<JSONObject> favorInfoJsonDS = new OutputTag<JSONObject>("favor_info"){};
-        final OutputTag<JSONObject> userInfoSupMsgJsonDS = new OutputTag<JSONObject>("user_info_sup_msg"){};
-        final OutputTag<JSONObject> userInfoJsonDS = new OutputTag<JSONObject>("user_info"){};
+        final OutputTag<JSONObject> favorInfoJsonDS = new OutputTag<JSONObject>("favor_info") {
+        };
+        final OutputTag<JSONObject> userInfoSupMsgJsonDS = new OutputTag<JSONObject>("user_info_sup_msg") {
+        };
+        final OutputTag<JSONObject> userInfoJsonDS = new OutputTag<JSONObject>("user_info") {
+        };
 
         SingleOutputStreamOperator<Object> dbJsonDS = kafkaSource.map(JSON::parseObject).process(new ProcessFunction<JSONObject, Object>() {
             @Override
@@ -82,9 +92,9 @@ public class label2kafka {
                     context.output(commentInfoJsonDS, jsonObject);
                 } else if (table.equals("favor_info")) {
                     context.output(favorInfoJsonDS, jsonObject);
-                }else if (table.equals("user_info_sup_msg")) {
+                } else if (table.equals("user_info_sup_msg")) {
                     context.output(userInfoSupMsgJsonDS, jsonObject);
-                }else if (table.equals("user_info")) {
+                } else if (table.equals("user_info")) {
                     context.output(userInfoJsonDS, jsonObject);
                 }
                 collector.collect(jsonObject);
@@ -119,8 +129,8 @@ public class label2kafka {
 
         // 异步io
         SingleOutputStreamOperator<JSONObject> userInfo = userInfoOutputDS2
-                .keyBy(o->o.getString("id"))
-                .intervalJoin(userInfoSupMsgOutputDS2.keyBy(o->o.getString("uid")))
+                .keyBy(o -> o.getString("id"))
+                .intervalJoin(userInfoSupMsgOutputDS2.keyBy(o -> o.getString("uid")))
                 .between(Time.minutes(-30), Time.minutes(30))
                 .process(new ProcessJoinFunction<JSONObject, JSONObject, JSONObject>() {
                     @Override
@@ -137,8 +147,8 @@ public class label2kafka {
                         if (jsonObject1 != null) {
                             jsonObject1.put("user_info_sup_msg", jsonObject2);
                             String string = jsonObject1.getString("birthday");
-                            String substring = string.substring(0,3);
-                            String substring1 = string.substring(0,4);
+                            String substring = string.substring(0, 3);
+                            String substring1 = string.substring(0, 4);
 
                             System.out.println(substring1);
                             // 获取年份
@@ -146,11 +156,11 @@ public class label2kafka {
 
                             // 获取年龄
                             jsonObject1.put("age", substring1);
-                            jsonObject1.put("age",LocalDate.now().getYear()-jsonObject1.getInteger("age"));
+                            jsonObject1.put("age", LocalDate.now().getYear() - jsonObject1.getInteger("age"));
 
                             // 获取性别
-                            if(jsonObject1.getString("gender")==null){
-                                jsonObject1.put("gender","H");
+                            if (jsonObject1.getString("gender") == null) {
+                                jsonObject1.put("gender", "H");
                             }
                         }
                         collector.collect(jsonObject1);
@@ -161,3 +171,4 @@ public class label2kafka {
 
         env.execute();
     }
+}
