@@ -1,4 +1,4 @@
-package com.lyx.stream.realitime2.domain;
+package com.lyx.stream.realtime.v2.app.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

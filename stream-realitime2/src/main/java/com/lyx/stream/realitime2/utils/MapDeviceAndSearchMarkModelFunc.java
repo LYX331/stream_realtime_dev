@@ -1,8 +1,8 @@
 package com.lyx.stream.realitime2.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.lyx.stream.realitime2.domain.DimBaseCategory;
-import com.lyx.stream.realitime2.domain.DimCategoryCompare;
+import com.lyx.stream.realtime.v2.app.domain.DimBaseCategory;
+import com.lyx.stream.realtime.v2.app.domain.DimCategoryCompare;
 import com.lyx.stream.realtime.v1.utils.ConfigUtils;
 import com.lyx.stream.realtime.v2.app.utils.JdbcUtils;
 import org.apache.flink.api.common.functions.RichMapFunction;

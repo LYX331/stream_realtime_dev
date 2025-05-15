@@ -2,7 +2,7 @@ package com.lyx.stream.realitime2.dwd;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.lyx.stream.realitime2.domain.DimBaseCategory;
+import com.lyx.stream.realtime.v2.app.domain.DimBaseCategory;
 import com.lyx.stream.realitime2.utils.IntervalJoinUserInfoLabelProcessFunc;
 import com.lyx.stream.realitime2.utils.MapDeviceAndSearchMarkModelFunc;
 import com.lyx.stream.realtime.v1.utils.ConfigUtils;

@@ -166,7 +166,7 @@ public class DwdTradeOrderDetail {
         //写入
         result.executeInsert(Constant.TOPIC_DWD_TRADE_ORDER_DETAIL);
 
-        env.execute("DwdOrderFactSheet");
+//        env.execute("DwdOrderFactSheet");
 
     }
 }
