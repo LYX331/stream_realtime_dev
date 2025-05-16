@@ -8,7 +8,6 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="stream_realtime" />
-        <module name="stream-realitime2" />
         <module name="stream_common" />
       </profile>
     </annotationProcessing>

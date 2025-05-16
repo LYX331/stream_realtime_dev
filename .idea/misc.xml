@@ -10,6 +10,7 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/stream-realitime2/pom.xml" />
         <option value="$PROJECT_DIR$/stream_realtime1/pom.xml" />
         <option value="$PROJECT_DIR$/stream_realtime_dev2/pom.xml" />
       </set>

@@ -1,13 +1,14 @@
-package com.lyx.stream.realitime2.utils;
+package com.lyx.stream.realtime.v2.app.funcc;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.flink.streaming.api.functions.co.ProcessJoinFunction;
 import org.apache.flink.util.Collector;
 
 /**
- * @Description:
- * @Author: lyx
- * @Date: 2025/5/14 14:39
+ * @Package com.label.func.IntervalJoinUserInfoLabelProcessFunc
+ * @Author zhou.han
+ * @Date 2025/5/12 17:25
+ * @description: 用户表和用户维度补充表关联
  */
 public class IntervalJoinUserInfoLabelProcessFunc extends ProcessJoinFunction<JSONObject,JSONObject,JSONObject> {
     @Override

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.lyx:stream-realitime2:1.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../apache-maven-3.6.1/ppp/org/lyx/stream-realitime2/1.0-SNAPSHOT/stream-realitime2-1.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../apache-maven-3.6.1/ppp/org/lyx/stream-realitime2/1.0-SNAPSHOT/stream-realitime2-1.0-SNAPSHOT-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../apache-maven-3.6.1/ppp/org/lyx/stream-realitime2/1.0-SNAPSHOT/stream-realitime2-1.0-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

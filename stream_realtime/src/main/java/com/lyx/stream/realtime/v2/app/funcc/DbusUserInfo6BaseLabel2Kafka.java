@@ -1,17 +1,14 @@
-package com.lyx.stream.realitime2.dwd;
+package com.lyx.stream.realtime.v2.app.funcc;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.lyx.stream.realtime.v2.app.domain.DimBaseCategory;
-import com.lyx.stream.realitime2.utils.IntervalJoinUserInfoLabelProcessFunc;
-import com.lyx.stream.realitime2.utils.MapDeviceAndSearchMarkModelFunc;
-import com.lyx.stream.realtime.v1.utils.ConfigUtils;
-import com.lyx.stream.realtime.v1.utils.EnvironmentSettingUtils;
+
+
+import com.lyx.stream.realtime.v1.constant.Constant;
 import com.lyx.stream.realtime.v1.utils.KafkaUtils;
 import com.lyx.stream.realtime.v2.app.utils.AggregateUserDataProcessFunction;
 import com.lyx.stream.realtime.v2.app.utils.JdbcUtils;
 import com.lyx.stream.realtime.v2.app.utils.MapDeviceInfoAndSearchKetWordMsgFunc;
-import com.lyx.stream.realtime.v2.app.utils.ProcessFilterRepeatTsDataFunc;
 import lombok.SneakyThrows;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.RichMapFunction;
@@ -31,29 +28,36 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @Description:
- * @Author: lyx
- * @Date: 2025/5/14 14:27
- */
-public class DbusUserInfo6BaseLabel {
 
-    private static final String kafka_botstrap_servers = ConfigUtils.getString("kafka.bootstrap.servers");
-    private static final String kafka_cdc_db_topic = ConfigUtils.getString("kafka.cdc.db.topic");
-    private static final String kafka_page_log_topic = ConfigUtils.getString("kafka.page.topic");
+/**
+ * @Package com.label.DbusUserInfo6BaseLabel
+ * @Author zhou.han
+ * @Date 2025/5/12 10:01
+ * @description: 01 Task 6 BaseLine
+ */
+
+public class DbusUserInfo6BaseLabel2Kafka {
+
+    private static final String kafka_botstrap_servers = Constant.KAFKA_BROKERS;
+    private static final String kafka_cdc_db_topic = "realtime_v2_db";
+    private static final String kafka_page_log_topic = "realtime_v2_page_log";
 
     private static final List<DimBaseCategory> dim_base_categories;
     private static final Connection connection;
 
     private static final double device_rate_weight_coefficient = 0.1; // 设备权重系数
     private static final double search_rate_weight_coefficient = 0.15; // 搜索权重系数
+    private static final double time_rate_weight_coefficient = 0.1;    // 时间权重系数
+    private static final double amount_rate_weight_coefficient = 0.15;    // 价格权重系数
+    private static final double brand_rate_weight_coefficient = 0.2;    // 品牌权重系数
+    private static final double category_rate_weight_coefficient = 0.3; // 类目权重系数
 
     static {
         try {
             connection = JdbcUtils.getMySQLConnection(
-                    ConfigUtils.getString("mysql.url"),
-                    ConfigUtils.getString("mysql.user"),
-                    ConfigUtils.getString("mysql.pwd"));
+                    Constant.MYSQL_URL,
+                    Constant.MYSQL_USER_NAME,
+                    Constant.MYSQL_PASSWORD);
             String sql = "select b3.id,                          \n" +
                     "            b3.name as b3name,              \n" +
                     "            b2.name as b2name,              \n" +
@@ -73,10 +77,11 @@ public class DbusUserInfo6BaseLabel {
     @SneakyThrows
     public static void main(String[] args) {
 
-        System.setProperty("HADOOP_USER_NAME", "root");
+//        System.setProperty("HADOOP_USER_NAME", "root");
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        EnvironmentSettingUtils.defaultParameter(env);
+//        EnvironmentSettingUtils.defaultParameter(env);
+        env.setParallelism(4);
 
         // user info cdc
         SingleOutputStreamOperator<String> kafkaCdcDbSource = env.fromSource(
@@ -88,11 +93,11 @@ public class DbusUserInfo6BaseLabel {
                 ),
                 WatermarkStrategy.<String>forBoundedOutOfOrderness(Duration.ofSeconds(3))
                         .withTimestampAssigner((event, timestamp) -> {
-                                    JSONObject jsonObject = JSONObject.parseObject(event);
-                                    if (event != null && jsonObject.containsKey("ts_ms")) {
+                            JSONObject jsonObject = JSONObject.parseObject(event);
+                            if (event != null && jsonObject.containsKey("ts_ms")){
                                         try {
                                             return JSONObject.parseObject(event).getLong("ts_ms");
-                                        } catch (Exception e) {
+                                        }catch (Exception e){
                                             e.printStackTrace();
                                             System.err.println("Failed to parse event as JSON or get ts_ms: " + event);
                                             return 0L;
@@ -106,30 +111,30 @@ public class DbusUserInfo6BaseLabel {
 
         // page log
         SingleOutputStreamOperator<String> kafkaPageLogSource = env.fromSource(
-                        KafkaUtils.buildKafkaSecureSource(
-                                kafka_botstrap_servers,
-                                kafka_page_log_topic,
-                                new Date().toString(),
-                                OffsetsInitializer.earliest()
-                        ),
-                        WatermarkStrategy.<String>forBoundedOutOfOrderness(Duration.ofSeconds(3))
-                                .withTimestampAssigner((event, timestamp) -> {
-                                            JSONObject jsonObject = JSONObject.parseObject(event);
-                                            if (event != null && jsonObject.containsKey("ts_ms")) {
-                                                try {
-                                                    return JSONObject.parseObject(event).getLong("ts_ms");
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
-                                                    System.err.println("Failed to parse event as JSON or get ts_ms: " + event);
-                                                    return 0L;
-                                                }
-                                            }
+                KafkaUtils.buildKafkaSecureSource(
+                        kafka_botstrap_servers,
+                        kafka_page_log_topic,
+                        new Date().toString(),
+                        OffsetsInitializer.earliest()
+                ),
+                WatermarkStrategy.<String>forBoundedOutOfOrderness(Duration.ofSeconds(3))
+                        .withTimestampAssigner((event, timestamp) -> {
+                                    JSONObject jsonObject = JSONObject.parseObject(event);
+                                    if (event != null && jsonObject.containsKey("ts_ms")){
+                                        try {
+                                            return JSONObject.parseObject(event).getLong("ts_ms");
+                                        }catch (Exception e){
+                                            e.printStackTrace();
+                                            System.err.println("Failed to parse event as JSON or get ts_ms: " + event);
                                             return 0L;
                                         }
-                                ),
-                        "kafka_page_log_source"
-                ).uid("kafka_page_log_source")
-                .name("kafka_page_log_source");
+                                    }
+                                    return 0L;
+                                }
+                        ),
+                "kafka_page_log_source"
+        ).uid("kafka_page_log_source")
+         .name("kafka_page_log_source");
 
         SingleOutputStreamOperator<JSONObject> dataConvertJsonDs = kafkaCdcDbSource.map(JSON::parseObject)
                 .uid("convert json cdc db")
@@ -151,7 +156,6 @@ public class DbusUserInfo6BaseLabel {
 
         SingleOutputStreamOperator<JSONObject> processStagePageLogDs = keyedStreamLogPageMsg.process(new ProcessFilterRepeatTsDataFunc());
 
-//        processStagePageLogDs.filter(data -> data.getString("uid").equals("229")).print();
         // 2 min 分钟窗口
         SingleOutputStreamOperator<JSONObject> win2MinutesPageLogsDs = processStagePageLogDs.keyBy(data -> data.getString("uid"))
                 .process(new AggregateUserDataProcessFunction())
@@ -161,18 +165,46 @@ public class DbusUserInfo6BaseLabel {
                 .uid("win 2 minutes page count msg")
                 .name("win 2 minutes page count msg");
 
-        // 设备打分模型
-        win2MinutesPageLogsDs.map(new MapDeviceAndSearchMarkModelFunc(dim_base_categories, device_rate_weight_coefficient, search_rate_weight_coefficient))
-                .print();
+
+        // 设备打分模型 base2
+        SingleOutputStreamOperator<JSONObject> mapDeviceAndSearchRateResultDs = win2MinutesPageLogsDs.map(new MapDeviceAndSearchMarkModelFunc(dim_base_categories, device_rate_weight_coefficient, search_rate_weight_coefficient));
+
 
 
         SingleOutputStreamOperator<JSONObject> userInfoDs = dataConvertJsonDs.filter(data -> data.getJSONObject("source").getString("table").equals("user_info"))
                 .uid("filter kafka user info")
                 .name("filter kafka user info");
 
+        SingleOutputStreamOperator<JSONObject> cdcOrderInfoDs = dataConvertJsonDs.filter(data -> data.getJSONObject("source").getString("table").equals("order_info"))
+                .uid("filter kafka order info")
+                .name("filter kafka order info");
+
+        SingleOutputStreamOperator<JSONObject> cdcOrderDetailDs = dataConvertJsonDs.filter(data -> data.getJSONObject("source").getString("table").equals("order_detail"))
+                .uid("filter kafka order detail")
+                .name("filter kafka order detail");
+
+        SingleOutputStreamOperator<JSONObject> mapCdcOrderInfoDs = cdcOrderInfoDs.map(new MapOrderInfoDataFunc());
+        SingleOutputStreamOperator<JSONObject> mapCdcOrderDetailDs = cdcOrderDetailDs.map(new MapOrderDetailFunc());
+
+        SingleOutputStreamOperator<JSONObject> filterNotNullCdcOrderInfoDs = mapCdcOrderInfoDs.filter(data -> data.getString("id") != null && !data.getString("id").isEmpty());
+        SingleOutputStreamOperator<JSONObject> filterNotNullCdcOrderDetailDs = mapCdcOrderDetailDs.filter(data -> data.getString("order_id") != null && !data.getString("order_id").isEmpty());
+
+        KeyedStream<JSONObject, String> keyedStreamCdcOrderInfoDs = filterNotNullCdcOrderInfoDs.keyBy(data -> data.getString("id"));
+        KeyedStream<JSONObject, String> keyedStreamCdcOrderDetailDs = filterNotNullCdcOrderDetailDs.keyBy(data -> data.getString("order_id"));
+
+        SingleOutputStreamOperator<JSONObject> processIntervalJoinOrderInfoAndDetailDs = keyedStreamCdcOrderInfoDs.intervalJoin(keyedStreamCdcOrderDetailDs)
+                .between(Time.minutes(-2), Time.minutes(2))
+                .process(new IntervalDbOrderInfoJoinOrderDetailProcessFunc());
+
+        SingleOutputStreamOperator<JSONObject> processDuplicateOrderInfoAndDetailDs = processIntervalJoinOrderInfoAndDetailDs.keyBy(data -> data.getString("detail_id"))
+                .process(new processOrderInfoAndDetailFunc());
+
+        // 品类 品牌 年龄 时间 base4
+        SingleOutputStreamOperator<JSONObject> mapOrderInfoAndDetailModelDs = processDuplicateOrderInfoAndDetailDs.map(new MapOrderAndDetailRateModelFunc(dim_base_categories, time_rate_weight_coefficient, amount_rate_weight_coefficient, brand_rate_weight_coefficient, category_rate_weight_coefficient));
+
         SingleOutputStreamOperator<JSONObject> finalUserInfoDs = userInfoDs.map(new RichMapFunction<JSONObject, JSONObject>() {
             @Override
-            public JSONObject map(JSONObject jsonObject) {
+            public JSONObject map(JSONObject jsonObject){
                 JSONObject after = jsonObject.getJSONObject("after");
                 if (after != null && after.containsKey("birthday")) {
                     Integer epochDay = after.getInteger("birthday");
@@ -186,13 +218,14 @@ public class DbusUserInfo6BaseLabel {
         });
 
 
+
         SingleOutputStreamOperator<JSONObject> userInfoSupDs = dataConvertJsonDs.filter(data -> data.getJSONObject("source").getString("table").equals("user_info_sup_msg"))
                 .uid("filter kafka user info sup")
                 .name("filter kafka user info sup");
 
         SingleOutputStreamOperator<JSONObject> mapUserInfoDs = finalUserInfoDs.map(new RichMapFunction<JSONObject, JSONObject>() {
                     @Override
-                    public JSONObject map(JSONObject jsonObject) {
+                    public JSONObject map(JSONObject jsonObject){
                         JSONObject result = new JSONObject();
                         if (jsonObject.containsKey("after") && jsonObject.getJSONObject("after") != null) {
                             JSONObject after = jsonObject.getJSONObject("after");
@@ -221,6 +254,7 @@ public class DbusUserInfo6BaseLabel {
                                 }
                             }
                         }
+
                         return result;
                     }
                 })
@@ -267,7 +301,29 @@ public class DbusUserInfo6BaseLabel {
                 .uid("process intervalJoin order info")
                 .name("process intervalJoin order info");
 
+
         processIntervalJoinUserInfo6BaseMessageDs.print();
+
+//        processIntervalJoinUserInfo6BaseMessageDs.map(data -> data.toJSONString())
+//                        .sinkTo(
+//                                KafkaUtils.buildKafkaSink(kafka_botstrap_servers,"kafka_label_base6_topic")
+//                        );
+//
+//        mapOrderInfoAndDetailModelDs.map(data -> data.toJSONString())
+//                        .sinkTo(
+//                                KafkaUtils.buildKafkaSink(kafka_botstrap_servers,"kafka_label_base4_topic")
+//                        );
+//
+//        mapDeviceAndSearchRateResultDs.map(data -> data.toJSONString())
+//                        .sinkTo(
+//                                KafkaUtils.buildKafkaSink(kafka_botstrap_servers,"kafka_label_base2_topic")
+//                        );
+
+        processIntervalJoinUserInfo6BaseMessageDs.print("processIntervalJoinUserInfo6BaseMessageDs: ");
+        mapDeviceAndSearchRateResultDs.print("mapDeviceAndSearchRateResultDs: ");
+        mapOrderInfoAndDetailModelDs.print("mapOrderInfoAndDetailModelDs: ");
+
+
 
         env.execute("DbusUserInfo6BaseLabel");
     }
